@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/colors.dart';
 
@@ -33,7 +34,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         TextButton.icon(
-          onPressed: () {},
+          onPressed: () async {
+            const url = 'https://github.com/ShahedNoor';
+            if (await canLaunchUrl(Uri.parse(url))) {
+              await launchUrl(Uri.parse(url));
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
           icon: const FaIcon(
             FontAwesomeIcons.github,
             color: AppColor.whitePrimary,
@@ -48,7 +56,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               : const SizedBox.shrink(),
         ),
         TextButton.icon(
-          onPressed: () {},
+          onPressed: () async {
+            const url = 'https://www.linkedin.com/in/noorshahed/';
+            if (await canLaunchUrl(Uri.parse(url))) {
+              await launchUrl(Uri.parse(url));
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
           icon: const FaIcon(
             FontAwesomeIcons.linkedinIn,
             color: AppColor.whitePrimary,
@@ -83,13 +98,13 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
           icon: const Icon(
             Icons.menu_sharp,
-            color: AppColor.deepPurplePrimary,
+            color: AppColor.whitePrimary,
           ),
           label: width >= 700
               ? const Text(
                   'Menu',
                   style: TextStyle(
-                    color: AppColor.deepPurplePrimary,
+                    color: AppColor.whitePrimary,
                   ),
                 )
               : const SizedBox.shrink(),

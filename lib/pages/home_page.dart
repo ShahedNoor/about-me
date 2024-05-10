@@ -1,6 +1,8 @@
-import 'package:about_me/components/my_appbar.dart';
 import 'package:about_me/utils/colors.dart';
 import 'package:flutter/material.dart';
+
+import '../components/app_drawer.dart';
+import '../components/my_appbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,21 +19,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: AppColor.backgroundPrimary,
-      endDrawer: Drawer(
-        child: ListView(
-          // Add content to the drawer
-          children: [
-            ListTile(
-              title: Text('Item 1'),
-              onTap: () {},
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
+      endDrawer: AppDrawer(),
       appBar: MyAppBar(
         scaffoldKey: _scaffoldKey,
       ),
