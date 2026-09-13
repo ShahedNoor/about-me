@@ -1,6 +1,331 @@
+"use client";
 
-export default function Apps() {
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { getApps } from "../../lib/firestore-service";
+
+function AppCardSkeleton() {
   return (
-    <div dangerouslySetInnerHTML={{ __html: `<svg aria-hidden="true" style="position:absolute;width:0;height:0;pointer-events:none;overflow:hidden"><defs><filter id="liquid-lens-lg" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage class="liquid-lens-map" result="lensMap" preserveAspectRatio="none" x="0%" y="0%" width="100%" height="100%"></feImage><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="rOnly"></feColorMatrix><feDisplacementMap in="rOnly" in2="lensMap" scale="92" xChannelSelector="R" yChannelSelector="G" result="rDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="gOnly"></feColorMatrix><feDisplacementMap in="gOnly" in2="lensMap" scale="85" xChannelSelector="R" yChannelSelector="G" result="gDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bOnly"></feColorMatrix><feDisplacementMap in="bOnly" in2="lensMap" scale="76" xChannelSelector="R" yChannelSelector="G" result="bDisp"></feDisplacementMap><feBlend in="rDisp" in2="gDisp" mode="lighten" result="rgCombined"></feBlend><feBlend in="rgCombined" in2="bDisp" mode="lighten" result="rgbCombined"></feBlend><feGaussianBlur in="rgbCombined" stdDeviation="3.5"></feGaussianBlur></filter><filter id="liquid-lens-md" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage class="liquid-lens-map" result="lensMap" preserveAspectRatio="none" x="0%" y="0%" width="100%" height="100%"></feImage><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="rOnly"></feColorMatrix><feDisplacementMap in="rOnly" in2="lensMap" scale="52" xChannelSelector="R" yChannelSelector="G" result="rDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="gOnly"></feColorMatrix><feDisplacementMap in="gOnly" in2="lensMap" scale="48" xChannelSelector="R" yChannelSelector="G" result="gDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bOnly"></feColorMatrix><feDisplacementMap in="bOnly" in2="lensMap" scale="42" xChannelSelector="R" yChannelSelector="G" result="bDisp"></feDisplacementMap><feBlend in="rDisp" in2="gDisp" mode="lighten" result="rgCombined"></feBlend><feBlend in="rgCombined" in2="bDisp" mode="lighten" result="rgbCombined"></feBlend><feGaussianBlur in="rgbCombined" stdDeviation="2.8"></feGaussianBlur></filter><filter id="liquid-lens-sm" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage class="liquid-lens-map" result="lensMap" preserveAspectRatio="none" x="0%" y="0%" width="100%" height="100%"></feImage><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="rOnly"></feColorMatrix><feDisplacementMap in="rOnly" in2="lensMap" scale="26" xChannelSelector="R" yChannelSelector="G" result="rDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="gOnly"></feColorMatrix><feDisplacementMap in="gOnly" in2="lensMap" scale="22" xChannelSelector="R" yChannelSelector="G" result="gDisp"></feDisplacementMap><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bOnly"></feColorMatrix><feDisplacementMap in="bOnly" in2="lensMap" scale="18" xChannelSelector="R" yChannelSelector="G" result="bDisp"></feDisplacementMap><feBlend in="rDisp" in2="gDisp" mode="lighten" result="rgCombined"></feBlend><feBlend in="rgCombined" in2="bDisp" mode="lighten" result="rgbCombined"></feBlend><feGaussianBlur in="rgbCombined" stdDeviation="1.4"></feGaussianBlur></filter></defs></svg><nav class="site-nav" aria-label="Site navigation"><div class="site-nav-pill liquid-glass chroma-thick with-lens-sm"><a class="site-nav-chip site-nav-chip-back" aria-label="Back" title="Back" href="/"><span class="site-nav-chip-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></span></a><span class="site-nav-divider" aria-hidden="true"></span><button type="button" aria-label="Switch to dark mode" aria-pressed="false" class="site-nav-pill-theme" style="opacity:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><line x1="12" y1="2.5" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="21.5"></line><line x1="2.5" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="21.5" y2="12"></line><line x1="4.9" y1="4.9" x2="6.7" y2="6.7"></line><line x1="17.3" y1="17.3" x2="19.1" y2="19.1"></line><line x1="4.9" y1="19.1" x2="6.7" y2="17.3"></line><line x1="17.3" y1="6.7" x2="19.1" y2="4.9"></line></svg></button></div></nav><div class="site-nav-bottom" aria-label="Section sub-navigation"><div class="site-nav-bottom-pill liquid-glass chroma-thick with-lens-sm" id="site-nav-sub-slot"></div></div><div class="tech-page"><div class="tech-shell"><header class="page-hero"><div class="page-eyebrow"><span class="page-eyebrow-slash" aria-hidden="true">//</span><span class="page-eyebrow-label">Apps</span></div><h1 class="page-hero-title">Apps I&#x27;ve Built</h1><p class="page-hero-desc">Four indie apps shipped on iOS and Android.</p><div class="page-meta"><span class="page-meta-user"><img alt="" loading="lazy" width="18" height="18" decoding="async" data-nimg="1" class="page-meta-avatar" style="color:transparent"  src="https://www.mitchkoko.app/images/logo.png"/><span>Shahed Noor</span></span><span class="page-meta-dot" aria-hidden="true"></span><span class="page-meta-item">4<!-- --> Apps</span><span class="page-meta-dot" aria-hidden="true"></span><a class="page-meta-link" href="/about">About</a></div></header><section class="apps-grid" aria-label="Apps"><article class="tech-card app-card group" style="--card-accent:#F9731612;--section-color:#F97316"><a href="https://ritualz.app" target="_blank" rel="noopener noreferrer" class="app-card-main"><div class="app-card-body"><div class="app-card-head"><div class="tech-icon tech-card-icon-lg" style="--icon-color:#F97316"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F97316" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"></path></svg></div><span class="stack-card-number">01</span></div><div class="stack-card-meta-row"><span class="stack-card-verb">Track</span><span class="stack-card-dot" aria-hidden="true">·</span><span class="tech-card-meta">Habit Tracker</span></div><h2 class="tech-card-title">Ritualz</h2><p class="tech-card-desc">Build consistent habits with streaks, gentle reminders, and a calm daily view.</p></div><div class="app-card-media"><img alt="" decoding="async" data-nimg="fill" class="app-card-poster" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="(min-width: 960px) 22vw, (min-width: 640px) 45vw, 100vw"  src="https://www.mitchkoko.app/roadto1k/ep3/posters/ritualz.png"/></div></a><div class="app-card-stores"><a href="https://apps.apple.com/app/ritualz/id6443862619" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Ritualz on the App Store"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-3.15 2.58-4.67 2.7-4.74-1.47-2.15-3.76-2.45-4.58-2.48-1.95-.2-3.81 1.15-4.8 1.15-1 0-2.52-1.12-4.15-1.09-2.13.03-4.1 1.24-5.2 3.14-2.22 3.85-.57 9.55 1.6 12.68 1.06 1.53 2.32 3.25 3.97 3.19 1.6-.07 2.2-1.03 4.13-1.03 1.93 0 2.48 1.03 4.17.99 1.73-.03 2.82-1.55 3.87-3.09 1.22-1.77 1.72-3.49 1.75-3.58-.04-.02-3.35-1.29-3.38-5.13zM13.8 3.13c.88-1.07 1.48-2.56 1.31-4.03-1.27.05-2.81.85-3.72 1.91-.81.94-1.52 2.45-1.33 3.9 1.42.11 2.86-.72 3.74-1.78z"></path></svg><span>App Store</span></a><a href="https://play.google.com/store/apps/details?id=app.shahednoor.ritualzandroid" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Ritualz on Google Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 1.7v20.6L14.7 12 3.5 1.7zm12.5 11.6l3.5 2-15.8 9.1L16 13.3zM20.2 9.4l-3.7 2.1L4.6 1l15.6 8.4zM21.9 12c0 .6-.3 1.2-.9 1.6l-2.5 1.4L15.7 12l2.8-3 2.5 1.4c.6.4.9 1 .9 1.6z"></path></svg><span>Google Play</span></a></div></article><article class="tech-card app-card group" style="--card-accent:#10B98112;--section-color:#10B981"><a href="https://expensif.app" target="_blank" rel="noopener noreferrer" class="app-card-main"><div class="app-card-body"><div class="app-card-head"><div class="tech-icon tech-card-icon-lg" style="--icon-color:#10B981"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#10B981" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect><line x1="2.5" y1="10" x2="21.5" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg></div><span class="stack-card-number">02</span></div><div class="stack-card-meta-row"><span class="stack-card-verb">Budget</span><span class="stack-card-dot" aria-hidden="true">·</span><span class="tech-card-meta">Personal Finance</span></div><h2 class="tech-card-title">Expensif</h2><p class="tech-card-desc">Track spending, set budgets, and see where your money actually goes each month.</p></div><div class="app-card-media"><img alt="" decoding="async" data-nimg="fill" class="app-card-poster" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="(min-width: 960px) 22vw, (min-width: 640px) 45vw, 100vw"  src="https://www.mitchkoko.app/roadto1k/ep3/posters/expensif.png"/></div></a><div class="app-card-stores"><a href="https://apps.apple.com/app/expense-tracker-expensif/id6756248515" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Expensif on the App Store"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-3.15 2.58-4.67 2.7-4.74-1.47-2.15-3.76-2.45-4.58-2.48-1.95-.2-3.81 1.15-4.8 1.15-1 0-2.52-1.12-4.15-1.09-2.13.03-4.1 1.24-5.2 3.14-2.22 3.85-.57 9.55 1.6 12.68 1.06 1.53 2.32 3.25 3.97 3.19 1.6-.07 2.2-1.03 4.13-1.03 1.93 0 2.48 1.03 4.17.99 1.73-.03 2.82-1.55 3.87-3.09 1.22-1.77 1.72-3.49 1.75-3.58-.04-.02-3.35-1.29-3.38-5.13zM13.8 3.13c.88-1.07 1.48-2.56 1.31-4.03-1.27.05-2.81.85-3.72 1.91-.81.94-1.52 2.45-1.33 3.9 1.42.11 2.86-.72 3.74-1.78z"></path></svg><span>App Store</span></a><a href="https://play.google.com/store/apps/details?id=app.shahednoor.expensif" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Expensif on Google Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 1.7v20.6L14.7 12 3.5 1.7zm12.5 11.6l3.5 2-15.8 9.1L16 13.3zM20.2 9.4l-3.7 2.1L4.6 1l15.6 8.4zM21.9 12c0 .6-.3 1.2-.9 1.6l-2.5 1.4L15.7 12l2.8-3 2.5 1.4c.6.4.9 1 .9 1.6z"></path></svg><span>Google Play</span></a></div></article><article class="tech-card app-card group" style="--card-accent:#8B5CF612;--section-color:#8B5CF6"><a href="https://tuteee.app" target="_blank" rel="noopener noreferrer" class="app-card-main"><div class="app-card-body"><div class="app-card-head"><div class="tech-icon tech-card-icon-lg" style="--icon-color:#8B5CF6"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8B5CF6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5"></path><line x1="22" y1="10" x2="22" y2="15"></line></svg></div><span class="stack-card-number">03</span></div><div class="stack-card-meta-row"><span class="stack-card-verb">Learn</span><span class="stack-card-dot" aria-hidden="true">·</span><span class="tech-card-meta">AI Tutor</span></div><h2 class="tech-card-title">Tuteee</h2><p class="tech-card-desc">An AI tutor that explains any subject in plain language, at your pace.</p></div><div class="app-card-media"><img alt="" loading="lazy" decoding="async" data-nimg="fill" class="app-card-poster" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="(min-width: 960px) 22vw, (min-width: 640px) 45vw, 100vw"  src="https://www.mitchkoko.app/roadto1k/ep3/posters/tuteee.png"/></div></a><div class="app-card-stores"><a href="https://apps.apple.com/app/tuteee/id6745890396" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Tuteee on the App Store"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-3.15 2.58-4.67 2.7-4.74-1.47-2.15-3.76-2.45-4.58-2.48-1.95-.2-3.81 1.15-4.8 1.15-1 0-2.52-1.12-4.15-1.09-2.13.03-4.1 1.24-5.2 3.14-2.22 3.85-.57 9.55 1.6 12.68 1.06 1.53 2.32 3.25 3.97 3.19 1.6-.07 2.2-1.03 4.13-1.03 1.93 0 2.48 1.03 4.17.99 1.73-.03 2.82-1.55 3.87-3.09 1.22-1.77 1.72-3.49 1.75-3.58-.04-.02-3.35-1.29-3.38-5.13zM13.8 3.13c.88-1.07 1.48-2.56 1.31-4.03-1.27.05-2.81.85-3.72 1.91-.81.94-1.52 2.45-1.33 3.9 1.42.11 2.86-.72 3.74-1.78z"></path></svg><span>App Store</span></a><a href="https://play.google.com/store/apps/details?id=app.shahednoor.tuteee" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Tuteee on Google Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 1.7v20.6L14.7 12 3.5 1.7zm12.5 11.6l3.5 2-15.8 9.1L16 13.3zM20.2 9.4l-3.7 2.1L4.6 1l15.6 8.4zM21.9 12c0 .6-.3 1.2-.9 1.6l-2.5 1.4L15.7 12l2.8-3 2.5 1.4c.6.4.9 1 .9 1.6z"></path></svg><span>Google Play</span></a></div></article><article class="tech-card app-card group" style="--card-accent:#F43F5E12;--section-color:#F43F5E"><a href="/microwarz" target="_blank" rel="noopener noreferrer" class="app-card-main"><div class="app-card-body"><div class="app-card-head"><div class="tech-icon tech-card-icon-lg" style="--icon-color:#F43F5E"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F43F5E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="3.5"></rect><line x1="6" y1="12.5" x2="10" y2="12.5"></line><line x1="8" y1="10.5" x2="8" y2="14.5"></line><circle cx="15.5" cy="11.5" r="0.8" fill="#F43F5E" stroke="none"></circle><circle cx="18" cy="13.5" r="0.8" fill="#F43F5E" stroke="none"></circle></svg></div><span class="stack-card-number">04</span></div><div class="stack-card-meta-row"><span class="stack-card-verb">Play</span><span class="stack-card-dot" aria-hidden="true">·</span><span class="tech-card-meta">Mobile Game</span></div><h2 class="tech-card-title">Micro Warz</h2><p class="tech-card-desc">Fast-paced mobile game with quick matches and competitive leaderboards.</p></div><div class="app-card-media"><img alt="" loading="lazy" decoding="async" data-nimg="fill" class="app-card-poster" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent" sizes="(min-width: 960px) 22vw, (min-width: 640px) 45vw, 100vw"  src="https://www.mitchkoko.app/roadto1k/ep3/posters/microwarz.png"/></div></a><div class="app-card-stores"><a href="https://apps.apple.com/app/micro-warz/id6759314141" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Micro Warz on the App Store"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-3.15 2.58-4.67 2.7-4.74-1.47-2.15-3.76-2.45-4.58-2.48-1.95-.2-3.81 1.15-4.8 1.15-1 0-2.52-1.12-4.15-1.09-2.13.03-4.1 1.24-5.2 3.14-2.22 3.85-.57 9.55 1.6 12.68 1.06 1.53 2.32 3.25 3.97 3.19 1.6-.07 2.2-1.03 4.13-1.03 1.93 0 2.48 1.03 4.17.99 1.73-.03 2.82-1.55 3.87-3.09 1.22-1.77 1.72-3.49 1.75-3.58-.04-.02-3.35-1.29-3.38-5.13zM13.8 3.13c.88-1.07 1.48-2.56 1.31-4.03-1.27.05-2.81.85-3.72 1.91-.81.94-1.52 2.45-1.33 3.9 1.42.11 2.86-.72 3.74-1.78z"></path></svg><span>App Store</span></a><a href="https://play.google.com/store/apps/details?id=app.shahednoor.blinkbattle" target="_blank" rel="noopener noreferrer" class="tech-pill app-store-pill" aria-label="Micro Warz on Google Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 1.7v20.6L14.7 12 3.5 1.7zm12.5 11.6l3.5 2-15.8 9.1L16 13.3zM20.2 9.4l-3.7 2.1L4.6 1l15.6 8.4zM21.9 12c0 .6-.3 1.2-.9 1.6l-2.5 1.4L15.7 12l2.8-3 2.5 1.4c.6.4.9 1 .9 1.6z"></path></svg><span>Google Play</span></a></div></article></section><footer class="stack-signoff" aria-label="Footer"><div class="site-signoff"><p class="article-footer-byline">Created with<!-- --> <span class="article-footer-heart" aria-hidden="true">♥</span><span class="sr-only">love</span> by Shahed Noor</p></div></footer></div></div><!--\$--><!--/\$-->` }} />
+    <article className="tech-card app-card app-skeleton-card">
+      <div className="app-card-main" style={{ pointerEvents: "none" }}>
+        <div className="app-card-body">
+          <div className="app-card-head" style={{ marginBottom: "16px" }}>
+            <div className="shimmer-block" style={{ width: "44px", height: "44px", borderRadius: "14px" }} />
+            <div className="shimmer-block" style={{ width: "24px", height: "16px", borderRadius: "6px" }} />
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "12px" }}>
+            <div className="shimmer-block" style={{ width: "40px", height: "12px", borderRadius: "4px" }} />
+            <div className="shimmer-block" style={{ width: "80px", height: "12px", borderRadius: "4px" }} />
+          </div>
+
+          <div className="shimmer-block" style={{ width: "65%", height: "24px", borderRadius: "8px", marginBottom: "12px" }} />
+          <div className="shimmer-block" style={{ width: "95%", height: "14px", borderRadius: "4px", marginBottom: "6px" }} />
+          <div className="shimmer-block" style={{ width: "80%", height: "14px", borderRadius: "4px" }} />
+        </div>
+
+        <div className="app-card-media" style={{ minHeight: "260px", background: "transparent" }}>
+          <div className="shimmer-block" style={{ width: "100%", height: "100%", borderRadius: "18px" }} />
+        </div>
+      </div>
+
+      <div className="app-card-stores" style={{ marginTop: "16px" }}>
+        <div className="shimmer-block" style={{ width: "90px", height: "30px", borderRadius: "9999px" }} />
+        <div className="shimmer-block" style={{ width: "95px", height: "30px", borderRadius: "9999px" }} />
+      </div>
+    </article>
+  );
+}
+
+export default function AppsPage() {
+  const [apps, setApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getApps();
+        setApps(data);
+      } catch (err) {
+        console.error("Error loading apps:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const getAppIcon = (iconType, color) => {
+    switch (iconType) {
+      case "card":
+        return (
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+            <line x1="2.5" y1="10" x2="21.5" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+          </svg>
+        );
+      case "education":
+        return (
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 10L12 5 2 10l10 5 10-5z" />
+            <path d="M6 12v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5" />
+            <line x1="22" y1="10" x2="22" y2="15" />
+          </svg>
+        );
+      case "gamepad":
+        return (
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="7" width="20" height="11" rx="3.5" />
+            <line x1="6" y1="12.5" x2="10" y2="12.5" />
+            <line x1="8" y1="10.5" x2="8" y2="14.5" />
+            <circle cx="15.5" cy="11.5" r="0.8" fill={color} stroke="none" />
+            <circle cx="18" cy="13.5" r="0.8" fill={color} stroke="none" />
+          </svg>
+        );
+      default: // flame/fire
+        return (
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <>
+      <style jsx global>{`
+        .shimmer-block {
+          position: relative;
+          overflow: hidden;
+          background: rgba(255, 255, 255, 0.05);
+        }
+        :root[data-theme="light"] .shimmer-block {
+          background: rgba(0, 0, 0, 0.06);
+        }
+        .shimmer-block::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          transform: translateX(-100%);
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            transparent 100%
+          );
+          animation: shimmerSlide 1.6s infinite ease-in-out;
+        }
+        :root[data-theme="light"] .shimmer-block::after {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.5) 50%,
+            transparent 100%
+          );
+        }
+        @keyframes shimmerSlide {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+        .app-skeleton-card {
+          border-color: rgba(255, 255, 255, 0.06) !important;
+          animation: pulseFade 2s infinite ease-in-out;
+        }
+        @keyframes pulseFade {
+          0%, 100% { opacity: 0.95; }
+          50% { opacity: 0.7; }
+        }
+      `}</style>
+
+      {/* Top Floating Navigation Pill */}
+      <nav className="site-nav" aria-label="Site navigation">
+        <div className="site-nav-pill liquid-glass chroma-thick with-lens-sm">
+          <Link className="site-nav-chip site-nav-chip-back" aria-label="Back" title="Back" href="/">
+            <span className="site-nav-chip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+            </span>
+          </Link>
+          <span className="site-nav-divider" aria-hidden="true" />
+          <button
+            type="button"
+            aria-label="Switch to dark mode"
+            className="site-nav-pill-theme"
+            style={{ opacity: 1 }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="4.2" />
+              <line x1="12" y1="2.5" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="21.5" />
+              <line x1="2.5" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="21.5" y2="12" />
+              <line x1="4.9" y1="4.9" x2="6.7" y2="6.7" />
+              <line x1="17.3" y1="17.3" x2="19.1" y2="19.1" />
+              <line x1="4.9" y1="19.1" x2="6.7" y2="17.3" />
+              <line x1="17.3" y1="6.7" x2="19.1" y2="4.9" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <div className="tech-page">
+        <div className="tech-shell">
+          {/* Header */}
+          <header className="page-hero">
+            <div className="page-eyebrow">
+              <span className="page-eyebrow-slash" aria-hidden="true">//</span>
+              <span className="page-eyebrow-label">Apps</span>
+            </div>
+            <h1 className="page-hero-title">Apps I&#x27;ve Built</h1>
+            <p className="page-hero-desc">Indie apps shipped on iOS and Android.</p>
+            <div className="page-meta">
+              <span className="page-meta-user">
+                <img
+                  alt="Shahed Noor"
+                  width="18"
+                  height="18"
+                  className="page-meta-avatar"
+                  src="/images/shahed_noor.png"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/logo.png";
+                  }}
+                />
+                <span>Shahed Noor</span>
+              </span>
+              <span className="page-meta-dot" aria-hidden="true" />
+              <span className="page-meta-item">
+                {loading ? "..." : `${apps.length} Apps`}
+              </span>
+              <span className="page-meta-dot" aria-hidden="true" />
+              <Link className="page-meta-link" href="/">Home</Link>
+            </div>
+          </header>
+
+          {/* Apps Dynamic Grid (or Shimmer Loading) */}
+          <section className="apps-grid" aria-label="Apps">
+            {loading ? (
+              <>
+                <AppCardSkeleton />
+                <AppCardSkeleton />
+                <AppCardSkeleton />
+                <AppCardSkeleton />
+              </>
+            ) : apps.length === 0 ? (
+              <div style={{ gridColumn: "1 / -1", padding: "40px", textAlign: "center", color: "var(--text-secondary, #a3a3a3)" }}>
+                No apps published yet.
+              </div>
+            ) : (
+              apps.map((app, index) => {
+                const accentColor = app.color || "#F97316";
+                const appNumber = app.number || String(index + 1).padStart(2, "0");
+
+                return (
+                  <article
+                    key={app.id || index}
+                    className="tech-card app-card group"
+                    style={{
+                      "--card-accent": `${accentColor}12`,
+                      "--section-color": accentColor,
+                    }}
+                  >
+                    <a
+                      href={app.websiteUrl || "#"}
+                      target={app.websiteUrl?.startsWith("http") ? "_blank" : "_self"}
+                      rel="noopener noreferrer"
+                      className="app-card-main"
+                    >
+                      <div className="app-card-body">
+                        <div className="app-card-head">
+                          <div className="tech-icon tech-card-icon-lg" style={{ "--icon-color": accentColor }}>
+                            {getAppIcon(app.iconType, accentColor)}
+                          </div>
+                          <span className="stack-card-number">{appNumber}</span>
+                        </div>
+
+                        <div className="stack-card-meta-row">
+                          <span className="stack-card-verb">{app.verb || "Build"}</span>
+                          <span className="stack-card-dot" aria-hidden="true">·</span>
+                          <span className="tech-card-meta">{app.category || "App"}</span>
+                        </div>
+
+                        <h2 className="tech-card-title">{app.title}</h2>
+                        <p className="tech-card-desc">{app.desc}</p>
+                      </div>
+
+                      {app.posterUrl && (
+                        <div className="app-card-media">
+                          <img
+                            alt={app.title}
+                            className="app-card-poster"
+                            style={{
+                              position: "absolute",
+                              height: "100%",
+                              width: "100%",
+                              left: 0,
+                              top: 0,
+                              right: 0,
+                              bottom: 0,
+                              objectFit: "cover",
+                            }}
+                            src={app.posterUrl}
+                          />
+                        </div>
+                      )}
+                    </a>
+
+                    {(app.appStoreUrl || app.googlePlayUrl) && (
+                      <div className="app-card-stores">
+                        {app.appStoreUrl && (
+                          <a
+                            href={app.appStoreUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="tech-pill app-store-pill"
+                            aria-label={`${app.title} on the App Store`}
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path d="M17.05 12.04c-.03-3.15 2.58-4.67 2.7-4.74-1.47-2.15-3.76-2.45-4.58-2.48-1.95-.2-3.81 1.15-4.8 1.15-1 0-2.52-1.12-4.15-1.09-2.13.03-4.1 1.24-5.2 3.14-2.22 3.85-.57 9.55 1.6 12.68 1.06 1.53 2.32 3.25 3.97 3.19 1.6-.07 2.2-1.03 4.13-1.03 1.93 0 2.48 1.03 4.17.99 1.73-.03 2.82-1.55 3.87-3.09 1.22-1.77 1.72-3.49 1.75-3.58-.04-.02-3.35-1.29-3.38-5.13zM13.8 3.13c.88-1.07 1.48-2.56 1.31-4.03-1.27.05-2.81.85-3.72 1.91-.81.94-1.52 2.45-1.33 3.9 1.42.11 2.86-.72 3.74-1.78z" />
+                            </svg>
+                            <span>App Store</span>
+                          </a>
+                        )}
+
+                        {app.googlePlayUrl && (
+                          <a
+                            href={app.googlePlayUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="tech-pill app-store-pill"
+                            aria-label={`${app.title} on Google Play`}
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path d="M3.5 1.7v20.6L14.7 12 3.5 1.7zm12.5 11.6l3.5 2-15.8 9.1L16 13.3zM20.2 9.4l-3.7 2.1L4.6 1l15.6 8.4zM21.9 12c0 .6-.3 1.2-.9 1.6l-2.5 1.4L15.7 12l2.8-3 2.5 1.4c.6.4.9 1 .9 1.6z" />
+                            </svg>
+                            <span>Google Play</span>
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </article>
+                );
+              })
+            )}
+          </section>
+
+          {/* Footer */}
+          <footer className="stack-signoff" aria-label="Footer">
+            <div className="site-signoff">
+              <p className="article-footer-byline">
+                Created with <span className="article-footer-heart" aria-hidden="true">♥</span> by Shahed Noor
+              </p>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </>
   );
 }

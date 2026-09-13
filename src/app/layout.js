@@ -28,8 +28,6 @@ export default function RootLayout({ children }) {
             })();
           `
         }} />
-        <link rel="stylesheet" href="https://www.mitchkoko.app/_next/static/chunks/0la5g.~.qnhz6.css" />
-        <link rel="stylesheet" href="https://www.mitchkoko.app/_next/static/chunks/0u~f_57sqscez.css" />
         <style dangerouslySetInnerHTML={{
           __html: `
             .site-nav-pill-theme, .theme-toggle {
